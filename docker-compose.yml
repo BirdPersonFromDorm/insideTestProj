@@ -1,35 +1,27 @@
-version: '3.1'
+version: '3'
 services:
-  app:
-    image: 'blog-api-docker.jar'
+  mysql-standalone:
+    image: 'mysql:5.7'
+    environment:
+      - MYSQL_ROOT_PASSWORD=admin
+      - MYSQL_PASSWORD=admin
+      - MYSQL_DATABASE=testProj
+    ports:
+      - "3307:3306"
+    restart: always
+  springboot-docker-container:
+    image: springboot-docker-container
     ports:
       - "5050:5050"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:mysql://mysql-standalone:3306/testProj?autoReconnect=true&useSSL=false
+      SPRING_DATASOURCE_USERNAME: "root"
+      SPRING_DATASOURCE_PASSWORD: "admin"
+    build:
+      context: "./"
+      dockerfile: "Dockerfile"
+    restart: always
     depends_on:
-      - MYSQL
-    networks:
-      - blocknet
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:mysql://localhost:3305/testProj
-      - SPRING_DATASOURCE_USERNAME=root
-      - SPRING_DATASOURCE_PASSWORD=admin
-      - SPRING_JPA_HIBERNATE_DDL_AUTO=update
+      - mysql-standalone
 
-  MYSQL:
-    image: mysql
-    networks:
-      - blocknet
-    ports:
-      - "3306:3306"
-    environment:
-      - MYSQL_USER=root
-      - MYSQL_PASSWORD=admin
-      - TZ=UTC
-    healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
-      interval: 10s
-      timeout: 5s
-      retries: 5
 
-networks:
-  blocknet:
-    driver: bridge

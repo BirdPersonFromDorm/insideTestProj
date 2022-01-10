@@ -18,12 +18,12 @@ public class MessageController {
     @Autowired
     MessageService messageService;
 
-    @PostMapping("/user/add")
+    @PostMapping("/user/addNewMessage")
     public void addNewMessage(@RequestBody MessageRequest messageRequest) {
         messageService.addNew(messageRequest);
     }
 
-    @GetMapping("/user/getAll")
+    @GetMapping("/user/getAllMessage")
     public List<MessageResponse> getAllMessage() {
         return messageService.getAllMess();
     }
